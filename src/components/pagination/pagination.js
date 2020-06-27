@@ -13,12 +13,17 @@ export const Pagination = ({
   const delta = 2;
   const dots = '...';
 
+  const toConstructor = (pageNumber) => ({
+    pathname: '/',
+    search: `?criteria=${criteria}&page=${pageNumber}`,
+  });
+
   const renderPage = (pageNumber) => (
     <li
       className={`page-holder ${pageNumber === currentPage ? 'current' : ''}`}
       key={`${pageNumber}_pageholder`}
     >
-      <Link to={`/${criteria}/${pageNumber}`}>{pageNumber}</Link>
+      <Link to={toConstructor(pageNumber)}>{pageNumber}</Link>
     </li>
   );
 
@@ -38,7 +43,7 @@ export const Pagination = ({
     <li className="page-holder prev disabled">{'<'}</li>
   ) : (
     <li className="page-holder prev">
-      <Link to={`/${criteria}/${previousPage}`}>{'<'}</Link>
+      <Link to={toConstructor(previousPage)}>{'<'}</Link>
     </li>
   );
 
@@ -46,7 +51,7 @@ export const Pagination = ({
     <li className="page-holder prev disabled">{'>'}</li>
   ) : (
     <li className="page-holder next">
-      <Link to={`/${criteria}/${nextPage}`}>{'>'}</Link>
+      <Link to={toConstructor(nextPage)}>{'>'}</Link>
     </li>
   );
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './lightbox.scss';
+import { isNil } from 'ramda';
 
 export const Lightbox = ({
   criteria,
@@ -22,13 +23,21 @@ export const Lightbox = ({
   const isLastIndexInPage = maxIdx === nextIdx;
   const isFirstIndexInPage = previousIdx === -1;
 
+  const toConstructor = (imageIdx) =>
+    isNil(imageIdx)
+      ? {
+          pathname: '/',
+          search: `?criteria=${criteria}&page=${currentPage}`,
+        }
+      : {
+          pathname: '/',
+          search: `?criteria=${criteria}&page=${currentPage}&imageIdx=${imageIdx}`,
+        };
+
   const previousBtn = isFirstIndexInPage ? (
     <div className="previous disabled"></div>
   ) : (
-    <Link
-      to={`/${criteria}/${currentPage}/${currentIdx - 1}`}
-      className="previous"
-    >
+    <Link to={toConstructor(previousIdx)} className="previous">
       {'<'}
     </Link>
   );
@@ -36,13 +45,13 @@ export const Lightbox = ({
   const nextBtn = isLastIndexInPage ? (
     <div className="next disabled">{'X'}</div>
   ) : (
-    <Link to={`/${criteria}/${currentPage}/${currentIdx + 1}`} className="next">
+    <Link to={toConstructor(nextIdx)} className="next">
       {'>'}
     </Link>
   );
   return (
     <div className="lightbox">
-      <Link to={`/${criteria}/${currentPage}`}>
+      <Link to={toConstructor()}>
         <div className="main">
           <div className="image-container">
             <img alt={title} src={url} />

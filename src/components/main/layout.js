@@ -1,19 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { SearchBox } from '../search';
 import { Thumbnail } from '../thumbnail';
 import { Lightbox } from '../lightbox';
 import { Pagination } from '../pagination';
 import './layout.scss';
 
-import { API_KEY, BASE_URL, AMOUNT_PER_PAGE } from '../../constants';
+import {
+  API_KEY,
+  BASE_URL,
+  AMOUNT_PER_PAGE,
+  FIRST_PAGE,
+} from '../../constants';
 import { Modal } from '../modal/modal';
-import { isNil, isEmpty } from 'ramda';
+import { isNil, isEmpty, tail } from 'ramda';
 
 const queryParamsToString = (queryParamsObj) =>
   Object.entries(queryParamsObj)
     .map(([key, value]) => `${key}=${value}`)
     .join('&');
+
+const parseLocationParams = ({ search = '' }) => {
+  if (isEmpty(search)) return {};
+
+  const searchParams = tail(search);
+  const individualParams = searchParams.split('&');
+  return individualParams.reduce((acc, val) => {
+    const [key, value] = val.split('=');
+    const decodedValue = decodeURIComponent(value);
+    return { ...acc, [key]: decodedValue };
+  }, {});
+};
 
 const searchGifForCriteria = (criteria, pageNumber) => {
   const offset = (pageNumber - 1) * AMOUNT_PER_PAGE;
@@ -31,7 +48,12 @@ const searchGifForCriteria = (criteria, pageNumber) => {
 };
 
 export const Layout = () => {
-  const { criteria, page = 1, imageIdx } = useParams(); // Use query params instead
+  const location = useLocation();
+
+  const { criteria, page = FIRST_PAGE, imageIdx } = parseLocationParams(
+    location
+  );
+
   const [state, setState] = useState({
     searchResult: { data: [], pagination: {} },
   });
@@ -52,9 +74,17 @@ export const Layout = () => {
     }
   }, [criteria, page]);
 
-  const onSearch = (criteria) => history.push(`/${criteria}/1`);
+  const onSearch = (criteria) =>
+    history.push({
+      pathname: '/',
+      search: `?criteria=${criteria}&page=${FIRST_PAGE}`,
+    });
 
-  const openModal = (idx) => history.push(`/${criteria}/${page}/${idx}`);
+  const openModal = (idx) =>
+    history.push({
+      pathname: '/',
+      search: `?criteria=${criteria}&page=${FIRST_PAGE}&imageIdx=${idx}`,
+    });
 
   const { searchResult } = state;
 

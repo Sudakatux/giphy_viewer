@@ -6,46 +6,10 @@ import { Lightbox } from '../lightbox';
 import { Pagination } from '../pagination';
 import './layout.scss';
 
-import {
-  API_KEY,
-  BASE_URL,
-  AMOUNT_PER_PAGE,
-  FIRST_PAGE,
-} from '../../constants';
+import { AMOUNT_PER_PAGE, FIRST_PAGE } from '../../constants';
 import { Modal } from '../modal/modal';
-import { isNil, isEmpty, tail } from 'ramda';
-
-const queryParamsToString = (queryParamsObj) =>
-  Object.entries(queryParamsObj)
-    .map(([key, value]) => `${key}=${value}`)
-    .join('&');
-
-const parseLocationParams = ({ search = '' }) => {
-  if (isEmpty(search)) return {};
-
-  const searchParams = tail(search);
-  const individualParams = searchParams.split('&');
-  return individualParams.reduce((acc, val) => {
-    const [key, value] = val.split('=');
-    const decodedValue = decodeURIComponent(value);
-    return { ...acc, [key]: decodedValue };
-  }, {});
-};
-
-const searchGifForCriteria = (criteria, pageNumber) => {
-  const offset = (pageNumber - 1) * AMOUNT_PER_PAGE;
-  const queryParams = {
-    api_key: API_KEY,
-    q: criteria,
-    limit: AMOUNT_PER_PAGE, // Extract to configuration
-    offset,
-    lang: 'en',
-    random_id: 'someRandomIdForSession',
-  };
-
-  const url = `${BASE_URL}?${queryParamsToString(queryParams)}`;
-  return fetch(url).then((response) => response.json());
-};
+import { isNil, isEmpty } from 'ramda';
+import { parseLocationParams, searchGifForCriteria } from './utils';
 
 export const Layout = () => {
   const location = useLocation();

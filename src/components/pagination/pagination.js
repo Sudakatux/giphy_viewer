@@ -22,7 +22,11 @@ export const Pagination = ({
     </li>
   );
 
-  const renderDots = () => <li className="page-holder dots">...</li>;
+  const renderDots = (aNumber) => (
+    <li className="page-holder dots" key={`dots_${aNumber}`}>
+      ...
+    </li>
+  );
 
   const previousPage = currentPage - 1;
   const nextPage = currentPage + 1;
@@ -30,7 +34,6 @@ export const Pagination = ({
   const isFirstPage = currentPage === 1;
   const isLastPage = currentPage === lastPage;
 
-  console.log('is first page', isFirstPage);
   const previousPageBtn = isFirstPage ? (
     <li className="page-holder prev disabled">{'<'}</li>
   ) : (
@@ -72,7 +75,7 @@ export const Pagination = ({
 
             return pages;
           }, [])
-          .map((el) => (el === dots ? renderDots() : renderPage(el)))}
+          .map((el, idx) => (el === dots ? renderDots(idx) : renderPage(el)))}
         {lastPageBtn}
       </ul>
     </div>

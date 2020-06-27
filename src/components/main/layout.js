@@ -62,7 +62,6 @@ export const Layout = () => {
     data: results,
     pagination: { count, total_count: totalCount = 1 },
   } = searchResult;
-  console.log('Search results', searchResult);
 
   const imageIdxNumber = parseInt(imageIdx);
   const pageNumber = parseInt(page);

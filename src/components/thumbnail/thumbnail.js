@@ -14,7 +14,7 @@ export const Thumbnail = ({ result, onClick }) => {
         className="image-container"
         style={{ backgroundImage: `url(${url})` }}
       >
-        <div class="info">
+        <div className="info">
           <div className="title">{title}</div>
         </div>
       </div>

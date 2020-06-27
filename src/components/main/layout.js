@@ -4,20 +4,24 @@ import { SearchBox } from '../search';
 import { Thumbnail } from '../thumbnail';
 import { Lightbox } from '../lightbox';
 import { Pagination } from '../pagination';
+import { RadioGroup } from '../radio-group';
 import './layout.scss';
 
 import { AMOUNT_PER_PAGE, FIRST_PAGE } from '../../constants';
 import { Modal } from '../modal/modal';
 import { isNil, isEmpty } from 'ramda';
-import { parseLocationParams, searchGifForCriteria } from './utils';
+import {
+  parseLocationParams,
+  searchGifForCriteria,
+  queryParamsObjectToString,
+} from '../utils';
 
 export const Layout = () => {
   const location = useLocation();
 
-  const { criteria, page = FIRST_PAGE, imageIdx } = parseLocationParams(
+  const { criteria, page = FIRST_PAGE, imageIdx, rating } = parseLocationParams(
     location
   );
-
   const [state, setState] = useState({
     searchResult: { data: [], pagination: {} },
   });
@@ -25,29 +29,49 @@ export const Layout = () => {
   let history = useHistory();
 
   useEffect(() => {
-    async function search(searchCriteria, pageNumber) {
+    async function search(searchCriteria, pageNumber, rating) {
       const searchResult = await searchGifForCriteria(
         searchCriteria,
-        pageNumber
+        pageNumber,
+        rating
       );
       setState({ searchResult });
     }
 
     if (!isNil(criteria)) {
-      search(criteria, page);
+      search(criteria, page, rating);
     }
-  }, [criteria, page]);
+  }, [criteria, page, rating]);
 
   const onSearch = (criteria) =>
     history.push({
       pathname: '/',
-      search: `?criteria=${criteria}&page=${FIRST_PAGE}`,
+      search: `?${queryParamsObjectToString({
+        criteria,
+        page: FIRST_PAGE,
+        rating,
+      })}`,
+    });
+
+  const onUpdateRating = (newRating) =>
+    history.push({
+      pathname: '/',
+      search: `?${queryParamsObjectToString({
+        criteria,
+        page,
+        rating: newRating,
+      })}`,
     });
 
   const openModal = (idx) =>
     history.push({
       pathname: '/',
-      search: `?criteria=${criteria}&page=${FIRST_PAGE}&imageIdx=${idx}`,
+      search: `?${queryParamsObjectToString({
+        criteria,
+        page: FIRST_PAGE,
+        rating,
+        imageIdx: idx,
+      })}`,
     });
 
   const { searchResult } = state;
@@ -66,6 +90,7 @@ export const Layout = () => {
     <div className="layout">
       <div className="search-container">
         <SearchBox onSearch={onSearch} />
+        <RadioGroup checkedValue={rating} onChange={onUpdateRating} />
       </div>
       <div className="search-results-container">
         {results.map((result, idx) => (
@@ -83,6 +108,7 @@ export const Layout = () => {
             itemsPerPage={AMOUNT_PER_PAGE}
             currentPage={pageNumber}
             criteria={criteria}
+            rating={rating}
           />
         )}
       </div>
@@ -94,6 +120,7 @@ export const Layout = () => {
             currentIdx={imageIdxNumber}
             currentPage={page}
             maxIdx={count}
+            rating={rating}
           />
         </Modal>
       ) : null}

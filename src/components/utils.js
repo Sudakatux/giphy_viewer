@@ -1,8 +1,9 @@
-import { API_KEY, BASE_URL, AMOUNT_PER_PAGE } from '../../constants';
-import { isEmpty, tail } from 'ramda';
+import { API_KEY, BASE_URL, AMOUNT_PER_PAGE } from '../constants';
+import { isEmpty, tail, isNil } from 'ramda';
 
-export const queryParamsToString = (queryParamsObj) =>
+export const queryParamsObjectToString = (queryParamsObj) =>
   Object.entries(queryParamsObj)
+    .filter(([__, value]) => !isNil(value))
     .map(([key, value]) => `${key}=${value}`)
     .join('&');
 
@@ -18,7 +19,7 @@ export const parseLocationParams = ({ search = '' }) => {
   }, {});
 };
 
-export const searchGifForCriteria = (criteria, pageNumber) => {
+export const searchGifForCriteria = (criteria, pageNumber, rating) => {
   const offset = (pageNumber - 1) * AMOUNT_PER_PAGE;
   const queryParams = {
     api_key: API_KEY,
@@ -26,9 +27,10 @@ export const searchGifForCriteria = (criteria, pageNumber) => {
     limit: AMOUNT_PER_PAGE, // Extract to configuration
     offset,
     lang: 'en',
+    rating,
     random_id: 'someRandomIdForSession',
   };
 
-  const url = `${BASE_URL}?${queryParamsToString(queryParams)}`;
+  const url = `${BASE_URL}?${queryParamsObjectToString(queryParams)}`;
   return fetch(url).then((response) => response.json());
 };

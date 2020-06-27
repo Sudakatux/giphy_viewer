@@ -1,6 +1,7 @@
 import React from 'react';
 import { range, last } from 'ramda';
 import { Link } from 'react-router-dom';
+import { queryParamsObjectToString } from '../utils';
 import './pagination.scss';
 
 export const Pagination = ({
@@ -8,6 +9,7 @@ export const Pagination = ({
   itemsPerPage,
   currentPage,
   criteria,
+  rating,
 }) => {
   const lastPage = Math.ceil(totalCount / itemsPerPage);
   const delta = 2;
@@ -15,7 +17,11 @@ export const Pagination = ({
 
   const toConstructor = (pageNumber) => ({
     pathname: '/',
-    search: `?criteria=${criteria}&page=${pageNumber}`,
+    search: `?${queryParamsObjectToString({
+      criteria,
+      page: pageNumber,
+      rating,
+    })}`,
   });
 
   const renderPage = (pageNumber) => (

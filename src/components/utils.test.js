@@ -1,6 +1,6 @@
-import { queryParamsToString, parseLocationParams } from './utils';
+import { queryParamsObjectToString, parseLocationParams } from './utils';
 
-describe('queryParamsToString', () => {
+describe('queryParamsObjectToString', () => {
   const pageNumber = 1;
   const criteria = 'cool criteria';
   const someIdx = 0;
@@ -10,10 +10,19 @@ describe('queryParamsToString', () => {
     someIdx,
   };
   it('Should take an object and return a string', () => {
-    const result = queryParamsToString(someObject);
+    const result = queryParamsObjectToString(someObject);
     expect(result).toContain(`pageNumber=${pageNumber}`);
     expect(result).toContain(`criteria=${criteria}`);
     expect(result).toContain(`someIdx=${someIdx}`);
+  });
+
+  it('Should not take into account null or undefined', () => {
+    const withNullOrUndefined = { ...someObject, myKey: null };
+    const result = queryParamsObjectToString(someObject);
+    expect(result).toContain(`pageNumber=${pageNumber}`);
+    expect(result).toContain(`criteria=${criteria}`);
+    expect(result).toContain(`someIdx=${someIdx}`);
+    expect(result).not.toContain(`myKey=${someIdx}`);
   });
 });
 

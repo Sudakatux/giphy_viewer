@@ -2,12 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './lightbox.scss';
 import { isNil } from 'ramda';
+import { queryParamsObjectToString } from '../utils';
 
 export const Lightbox = ({
   criteria,
   currentPage,
   currentImage,
   currentIdx,
+  rating,
   maxIdx,
 }) => {
   const {
@@ -27,11 +29,20 @@ export const Lightbox = ({
     isNil(imageIdx)
       ? {
           pathname: '/',
-          search: `?criteria=${criteria}&page=${currentPage}`,
+          search: `?${queryParamsObjectToString({
+            criteria,
+            page: currentPage,
+            rating,
+          })}`,
         }
       : {
           pathname: '/',
-          search: `?criteria=${criteria}&page=${currentPage}&imageIdx=${imageIdx}`,
+          search: `?${queryParamsObjectToString({
+            criteria,
+            page: currentPage,
+            imageIdx,
+            rating,
+          })}`,
         };
 
   const previousBtn = isFirstIndexInPage ? (

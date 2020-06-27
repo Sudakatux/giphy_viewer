@@ -1,16 +1,22 @@
 import React from 'react';
+import './thumbnail.scss';
 
 export const Thumbnail = ({ result, onClick }) => {
   const {
     images: {
-      fixed_width: { height, width, url },
+      fixed_width: { url },
     },
     title,
   } = result;
   return (
-    <div>
-      <div className="Thumbnail" onClick={onClick}>
-        <img alt={title} src={url} height={height} width={width} />
+    <div className="thumbnail" onClick={onClick}>
+      <div
+        className="image-container"
+        style={{ backgroundImage: `url(${url})` }}
+      >
+        <div class="info">
+          <div className="title">{title}</div>
+        </div>
       </div>
     </div>
   );

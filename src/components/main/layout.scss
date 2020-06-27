@@ -1,0 +1,23 @@
+.layout {
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 800px;
+  .search-container {
+    width: 100%;
+  }
+  .search-results-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .pagination-container {
+    display: flex;
+    align-items: center;
+  }
+}

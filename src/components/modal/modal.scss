@@ -6,7 +6,6 @@
   left: 0;
   background: rgba(0, 0, 0, 0.8);
   z-index: 99999;
-  pointer-events: none;
   animation: fadeIn 0.5s ease-in-out;
   @keyframes fadeIn {
     from {
@@ -17,10 +16,8 @@
     }
   }
   div {
-    width: 90%;
     position: relative;
-    margin: 15% auto;
+    margin: auto;
     border-radius: 3px;
-    background: #fff;
   }
 }

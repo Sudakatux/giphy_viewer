@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { SearchBox } from '../search';
 import { Thumbnail } from '../thumbnail';
+import { Lightbox } from '../lightbox';
 import { Pagination } from '../pagination';
 import './layout.scss';
 
-import { API_KEY, BASE_URL } from '../../constants';
+import { API_KEY, BASE_URL, AMOUNT_PER_PAGE } from '../../constants';
 import { Modal } from '../modal/modal';
-import { isNil } from 'ramda';
+import { isNil, isEmpty } from 'ramda';
 
 const queryParamsToString = (queryParamsObj) =>
   Object.entries(queryParamsObj)
@@ -15,18 +16,17 @@ const queryParamsToString = (queryParamsObj) =>
     .join('&');
 
 const searchGifForCriteria = (criteria, pageNumber) => {
-  const offset = (pageNumber - 1) * 20;
+  const offset = (pageNumber - 1) * AMOUNT_PER_PAGE;
   const queryParams = {
     api_key: API_KEY,
-    q: criteria, // TODO maybe encode
-    limit: 20, // Extract to configuration
+    q: criteria,
+    limit: AMOUNT_PER_PAGE, // Extract to configuration
     offset,
     lang: 'en',
     random_id: 'someRandomIdForSession',
   };
 
   const url = `${BASE_URL}?${queryParamsToString(queryParams)}`;
-  console.log(url);
   return fetch(url).then((response) => response.json());
 };
 
@@ -35,6 +35,7 @@ export const Layout = () => {
   const [state, setState] = useState({
     searchResult: { data: [], pagination: {} },
   });
+
   let history = useHistory();
 
   useEffect(() => {
@@ -52,17 +53,21 @@ export const Layout = () => {
   }, [criteria, page]);
 
   const onSearch = (criteria) => history.push(`/${criteria}/1`);
-  const toggleModal = (idx) => history.push(`/${criteria}/${page}/${idx}`);
+
+  const openModal = (idx) => history.push(`/${criteria}/${page}/${idx}`);
 
   const { searchResult } = state;
 
   const {
     data: results,
-    pagination: { total_count: totalCount = 1 },
+    pagination: { count, total_count: totalCount = 1 },
   } = searchResult;
+  console.log('Search results', searchResult);
 
-  // console.log(searchResult);
-  const modalImage = results[imageIdx];
+  const imageIdxNumber = parseInt(imageIdx);
+  const pageNumber = parseInt(page);
+
+  const modalImage = results[imageIdxNumber];
 
   return (
     <div className="layout">
@@ -74,20 +79,29 @@ export const Layout = () => {
           <Thumbnail
             key={result.id}
             result={result}
-            onClick={() => toggleModal(idx)}
+            onClick={() => openModal(idx)}
           />
         ))}
       </div>
       <div className="pagination-container">
-        <Pagination
-          totalCount={totalCount}
-          itemsPerPage={20}
-          currentPage={page}
-        />
+        {!isEmpty(results) && (
+          <Pagination
+            totalCount={totalCount}
+            itemsPerPage={AMOUNT_PER_PAGE}
+            currentPage={pageNumber}
+            criteria={criteria}
+          />
+        )}
       </div>
       {modalImage ? (
         <Modal>
-          <Thumbnail result={modalImage} onClick={toggleModal} />
+          <Lightbox
+            currentImage={modalImage}
+            criteria={criteria}
+            currentIdx={imageIdxNumber}
+            currentPage={page}
+            maxIdx={count}
+          />
         </Modal>
       ) : null}
     </div>
